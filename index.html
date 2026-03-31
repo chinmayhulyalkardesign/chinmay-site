@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Chinmay Hulyalkar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#100F0D;--paper:#F8F8F5;--cream:#EEECEA;--warm:#E5E3DF;
+  --muted:#6B6560;--hint:#AAA49C;--rule:#DDDBD6;
+  --serif:'Playfair Display',Georgia,serif;
+  --body:'EB Garamond',Georgia,serif;
+  --sans:'DM Sans',-apple-system,sans-serif;
+  --blue:#2A52BE;
+  --dot-color:rgba(0,0,0,.07);--dot-size:1px;--dot-space:20px;
+}
+html,body{height:100%;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;overflow:hidden}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;
+  background-image:radial-gradient(circle,var(--dot-color) var(--dot-size),transparent var(--dot-size));
+  background-size:var(--dot-space) var(--dot-space);
+  pointer-events:none;
+}
+.wrap{display:flex;flex-direction:column;height:100vh;position:relative;z-index:1}
+
+/* DRAG OVERLAY */
+.drag-overlay{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(248,248,245,.92);
+  backdrop-filter:blur(8px);
+  flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;pointer-events:none;
+}
+.drag-overlay.active{display:flex}
+.drag-box{
+  border:2px dashed var(--ink);border-radius:20px;
+  padding:48px 64px;display:flex;flex-direction:column;
+  align-items:center;gap:12px;
+}
+.drag-icon{font-size:40px;line-height:1}
+.drag-title{font-family:var(--serif);font-size:22px;letter-spacing:-.3px}
+.drag-sub{font-family:var(--sans);font-size:13px;color:var(--muted);font-weight:300}
+
+/* FEED */
+.feed{
+  flex:1;overflow-y:auto;
+  padding:48px 48px 24px;
+  display:flex;flex-direction:column;gap:0;
+  max-width:780px;width:100%;margin:0 auto;
+}
+.feed::-webkit-scrollbar{width:0}
+
+/* MESSAGE GROUPS */
+.mg{margin-bottom:22px}
+.mg.user{display:flex;justify-content:flex-end;flex-direction:column;align-items:flex-end;gap:6px}
+.mg.ch{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.sender{font-family:var(--sans);font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--hint);margin-bottom:8px}
+
+/* BUBBLES */
+.bbl{max-width:580px;padding:15px 20px;line-height:1.7}
+.mg.user .bbl{
+  background:var(--ink);color:var(--paper);
+  border-radius:18px 18px 3px 18px;
+  font-family:var(--sans);font-size:14px;font-weight:300;
+}
+.mg.ch .bbl{
+  background:var(--cream);color:var(--ink);
+  border-radius:3px 18px 18px 18px;
+  font-family:var(--body);font-size:16px;
+  border:1px solid var(--rule);
+}
+.mg.ch .bbl+.bbl{border-radius:3px 18px 18px 18px;margin-top:2px}
+.bbl p{margin-bottom:8px}.bbl p:last-child{margin-bottom:0}
+.bbl strong{font-weight:500}
+.bbl em{font-style:italic}
+
+/* IMAGE PREVIEW in chat */
+.img-preview{
+  max-width:320px;border-radius:14px;
+  border:1px solid var(--rule);overflow:hidden;
+  background:var(--warm);
+}
+.img-preview img{width:100%;display:block;border-radius:13px}
+.img-preview .img-label{
+  font-family:var(--sans);font-size:11px;color:var(--muted);
+  padding:8px 12px;font-weight:300;
+}
+
+/* PDF PREVIEW in chat */
+.pdf-preview{
+  display:flex;align-items:center;gap:12px;
+  background:var(--ink);color:var(--paper);
+  border-radius:14px;padding:14px 18px;
+  max-width:280px;
+}
+.pdf-icon{
+  width:36px;height:36px;border-radius:8px;
+  background:rgba(255,255,255,.12);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:16px;
+}
+.pdf-info .pdf-name{font-family:var(--sans);font-size:13px;font-weight:400;margin-bottom:2px}
+.pdf-info .pdf-size{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.4);font-weight:300}
+
+/* PULL QUOTE */
+.pq{
+  font-family:var(--serif);font-style:italic;
+  font-size:17px;line-height:1.5;color:var(--ink);
+  border-left:2px solid var(--ink);
+  padding:2px 0 2px 16px;margin:12px 0;
+}
+
+/* TYPING */
+.typ{
+  background:var(--cream);border:1px solid var(--rule);
+  border-radius:3px 18px 18px 18px;
+  padding:15px 22px;display:inline-flex;align-items:center;gap:0;
+}
+.typ-word{
+  font-family:var(--body);font-style:italic;
+  font-size:15px;color:var(--hint);
+  animation:fade-word 3s ease-in-out infinite;
+}
+@keyframes fade-word{
+  0%,100%{opacity:.3}
+  50%{opacity:1}
+}
+
+/* INPUT AREA */
+.inp-wrap{
+  padding:12px 48px 28px;
+  border-top:1px solid var(--rule);
+  background:rgba(248,248,245,.92);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  position:relative;z-index:1;
+}
+.inp-inner{max-width:780px;margin:0 auto;display:flex;gap:10px;align-items:flex-end}
+
+/* STAGED FILE STRIP */
+.staged{
+  max-width:780px;margin:0 auto 8px;
+  display:flex;gap:8px;flex-wrap:wrap;
+}
+.staged-item{
+  display:flex;align-items:center;gap:8px;
+  background:var(--cream);border:1px solid var(--rule);
+  border-radius:24px;padding:6px 12px 6px 8px;
+}
+.staged-thumb{width:24px;height:24px;border-radius:6px;object-fit:cover}
+.staged-pdf-ic{width:24px;height:24px;border-radius:6px;background:var(--ink);color:var(--paper);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
+.staged-name{font-family:var(--sans);font-size:12px;color:var(--muted);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.staged-remove{background:none;border:none;cursor:pointer;color:var(--hint);font-size:16px;line-height:1;padding:0;transition:color .15s}
+.staged-remove:hover{color:var(--ink)}
+
+textarea#inp{
+  flex:1;background:transparent;border:1px solid var(--rule);
+  border-radius:24px;padding:11px 20px;
+  font-family:var(--sans);font-size:14px;color:var(--ink);
+  outline:none;resize:none;min-height:44px;max-height:110px;
+  line-height:1.5;transition:border-color .2s;font-weight:300;
+}
+textarea#inp::placeholder{color:var(--hint)}
+textarea#inp:focus{border-color:var(--ink)}
+
+.btn-upload{
+  width:44px;height:44px;border-radius:50%;
+  background:transparent;border:1px solid var(--rule);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .15s;color:var(--hint);
+}
+.btn-upload:hover{border-color:var(--ink);color:var(--ink)}
+.btn-upload svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.5}
+
+.snd{
+  width:44px;height:44px;border-radius:50%;
+  background:var(--ink);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:opacity .15s,transform .1s;
+}
+.snd:hover{opacity:.7}
+.snd:active{transform:scale(.95)}
+.snd:disabled{opacity:.35;cursor:not-allowed}
+.snd svg{width:15px;height:15px;fill:var(--paper)}
+
+.hint-text{
+  font-family:var(--sans);font-size:11px;color:var(--hint);
+  text-align:center;margin-top:8px;font-weight:300;
+  max-width:780px;margin-left:auto;margin-right:auto;
+}
+
+@media(max-width:640px){
+  .feed,.inp-wrap{padding-left:20px;padding-right:20px}
+  .bbl{max-width:100%}
+  .drag-box{padding:32px 28px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- DRAG OVERLAY -->
+  <div class="drag-overlay" id="dragOverlay">
+    <div class="drag-box">
+      <div class="drag-icon">⬇</div>
+      <div class="drag-title">Drop to share with Chinmay</div>
+      <div class="drag-sub">Images, screenshots, or PDF resumes</div>
+    </div>
+  </div>
+
+  <!-- FEED -->
+  <div class="feed" id="feed">
+    <div class="mg ch">
+      <div class="sender">Chinmay</div>
+      <div class="bbl">
+        <p>Hey! Good to see you here.</p>
+        <p>I'm Chinmay — designer by craft, educator by choice, and biker by passion.</p>
+        <p>Ask me anything. You can also drop a design or resume into the chat for a review.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- INPUT -->
+  <div class="inp-wrap">
+    <div class="staged" id="staged"></div>
+    <div class="inp-inner">
+      <input type="file" id="fileIn" accept="image/*,.pdf" multiple style="display:none" onchange="onFileSelect(event)"/>
+      <textarea id="inp" rows="1" placeholder="Ask me anything…" onkeydown="kd(event)" oninput="ar(this)"></textarea>
+      <button class="snd" id="snd" onclick="send()">
+        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+      </button>
+    </div>
+    <div class="hint-text">Drag & drop images or PDFs anywhere to share for review</div>
+  </div>
+</div>
+
+<script>
+const SYSTEM = `You are Chinmay Hulyalkar — a Design Leader, Mentor, Educator, Speaker, and avid biker based in Pune, India. You are speaking directly to recruiters, design leaders, and product companies who are exploring your profile. Respond in first person, as Chinmay himself.
+
+Your tone is calm, thoughtful, warm, and occasionally personal. Not corporate. Not a brochure. Like a real conversation with a senior designer who is confident but never arrogant. Keep responses concise — 2 to 4 short paragraphs at most. Use line breaks between paragraphs.
+
+When reviewing a DESIGN (image/screenshot): Look at it through your lens — clarity, hierarchy, restraint, intent, user flows, information architecture, and whether it follows the principle of "as little as possible." Be honest but constructive. Ask what problem it's solving. Reference your principles where relevant — Dieter Rams, calm design, removing over adding. Don't just compliment — give a real, thoughtful review as a senior design leader would.
+
+When reviewing a RESUME (image or PDF): Review it as a mentor. Look at structure, clarity of narrative, how well it communicates impact vs just listing tasks, the strength of the personal voice, and whether it tells a coherent story. Be honest about what's working and what could be stronger. Encourage them — but don't sugarcoat.
+
+ABOUT YOU:
+- 12+ years in UX design and leadership
+- Currently Head of UX Design at Talentica Software, Pune (Apr 2017 – Present)
+- Philosophy: #CalmByDesign — "Design is not decoration. It's a discipline of decisions." Calm is not a mood, it's a feature that makes everything else work. The best design outcomes come from calm systems and a culture that is built, not improvised.
+- Drummer, avid gamer, motorcycle enthusiast — rode 3,500km Pune to Uttarakhand and back.
+
+CAREER:
+- Head of UX Design, Talentica Software, Pune — Apr 2017 to Present. Led UX strategy, team growth, business alignment. Positioned UX as a revenue driver. Talentpool won IBDA 2025 Best Design Award.
+- Sr. UX Designer, Clarice Technologies / Globant, Pune — Jul 2014 to Apr 2017.
+- UX Designer, Paperplane Solutions, Mumbai — Nov 2013 to Jul 2014.
+- UX Designer, Cognizant Technologies, Bangalore — Jan 2012 to Nov 2013.
+- UX Design Intern, Yahoo! R&D, Bangalore — Jan 2011 to Aug 2011. Yahoo! Mime — early conversational design.
+
+EDUCATION:
+- Masters, Design for Digital Experience, NID Bangalore, 2009–2011.
+- Diploma, Advertising & PR, Welingkar's Institute, Mumbai, 2008–2009.
+- B.Sc. IT, Ruparel College, Mumbai, 2004–2007.
+
+EXPERTISE: Mentoring, hiring, design reviews, product strategy, stakeholder alignment, design systems, co-creation workshops, agile teams, MVP planning, user research, IA, interaction design, Figma, AI-assisted workflows, conversational UX.
+
+TEACHING: Visiting Faculty at Symbiosis Institute of Design & Chitkara Design University. Industry Judge at Pixel War 2K26. Workshop at NID Bangalore.
+
+WRITING & SPEAKING:
+- "3 Crucial Steps in Designing Conversational AI" — UXmatters, 2024
+- "⚡ The UX Factor: Amplifying AI Impact" — UX India 2023
+- "3 Ways UX Design Can Draw Upon Architectural Concepts" — UXmatters, 2022
+- "5 Things to Consider While Defining UX for Startups" — Talentica Blog, 2022
+- "Applying Dieter Rams' Principles for Digital Products" — Medium, 2021
+- "5 Things to Consider While Designing UX for MVPs" — Talentica Blog, 2020
+
+AWARD: IBDA 2025 Best Design Award — Talentpool.
+
+PHILOSOPHY QUOTES:
+- "Design is not decoration — it's a discipline of decisions."
+- "Train, not terrorize." (design reviews)
+- "Leaders who are calm don't remove urgency — they remove panic."
+- "Adding is easy. Removing shows understanding."
+- "You can't empathise when you're fixated on features."
+- "The process is the calm. The clarity is just the outcome."
+- "When a product feels calm, users feel capable."
+- "Every message gets a thoughtful reply. That's a promise, not a policy."
+
+OPINIONS:
+- AI will not replace designers — it will make them better. Execution has mechanical weight; AI removes it and expands space for deeper thinking.
+- Design thinking is both valuable and a buzzword. Many use it as a label without practising it.
+- Companies doing design right: Google, Apple, Oracle, IBM, Figma, Razorpay, Microsoft, ServiceNow, and many design studios.
+- The best indicator of poor design is abandonment, not criticism.
+
+WORKING STYLE:
+- Starts projects with business understanding, scope definition, domain research, personas, competitor analysis, IA, sketching, wireframing, design systems, visual design, prototyping, testing, and thorough dev handover.
+- First week at a new company: observe and diagnose before doing anything. Understand team process, collaboration style, file structure, AI usage, engineering relationships. Diagnosis before prescription.
+- Workshops: context → definition → principles → patterns → examples → hands-on. Good workshops have two-way energy.
+- Feedback to junior designers: understand what they're working on, review together, ask why, give direction not answers, enable not discourage.
+
+DIFFICULT SITUATIONS:
+- Difficult stakeholder: understand their perspective first, probe for missing use cases, find middle ground.
+- Designer not growing: continuous communication, development plan, find where they shine.
+- Course correcting: step back, recheck scope and problem statement, involve right stakeholders.
+- Wrong design decisions: happen often — focus on understanding why, not self-criticism.
+
+ASPIRATIONS:
+- Looking for: Head of Design, Director of Design, or senior design leadership roles.
+- Ideal company: strong design culture, product-driven, well-funded, 5-year vision in place.
+- 5-year goal: well-known name in design — as an enabler, advocate, educator, and differentiator.
+
+RELATIONSHIPS:
+- PMs: align on scope, define flows and assumptions clearly, internal reviews to remove bugs, articulate design reasoning.
+- Trust: built over time through consistent good work. No shortcuts.
+
+#CALMBYDESIGN:
+- Origin: gradual — from college to intern to multiple roles, leaders, startups, corporate, talks, articles, real projects.
+- Not calm process symptoms: audit-style reviews, fear of sharing ideas, opinion-based decisions, rushed solutions, skipped research, misaligned products, no trust between design and engineering.
+
+PERSONAL:
+- Influences: Dieter Rams, Louis Kahn, Tadao Ando, Zaha Hadid, Dr B V Doshi, Le Corbusier, Frank Lloyd Wright — all architects, not UX designers.
+- Got into design: always a tinkerer — architecture → advertising → NID → UX.
+- Drumming and gaming: purely to disconnect and rest.
+- Riding: discovery. The 3,500km Pune–Uttarakhand ride mirrors how good design teams work — plan together, adapt individually, trust each other, collaboration over control.
+
+CONTACT:
+- Email: chinmayhulyalkar@gmail.com
+- Phone: +91 98206 71261
+- LinkedIn: linkedin.com/in/chinmayhulyalkar
+- Location: Pune, India. Open to remote and hybrid.
+
+GUARDED TOPICS:
+- Salary: prefer to discuss directly once there's alignment on scope and fit.
+- NDA clients: acknowledge domains worked in, some clients are confidential.
+- Portfolio: much work is under NDA, happy to walk through case studies in a direct conversation.
+- Past employers: always speak with respect and gratitude.
+- Politics/religion/controversy: politely redirect.
+
+RULES:
+- Always respond as Chinmay in first person.
+- Concise — never more than 4 short paragraphs.
+- No bullet points — natural flowing prose only.
+- If you don't know something, say so honestly and offer to connect directly.
+- Do not break character or mention being an AI.
+- Never say "As an AI" or "I'm a language model".`;
+
+const history = [];
+const feed = document.getElementById('feed');
+let busy = false;
+let stagedFiles = []; // [{type:'image'|'pdf', base64, mediaType, name, size, previewUrl}]
+
+// ── FILE HANDLING ──
+function onFileSelect(e) {
+  const files = Array.from(e.target.files);
+  e.target.value = '';
+  files.forEach(stageFile);
+}
+
+function stageFile(file) {
+  const isImg = file.type.startsWith('image/');
+  const isPdf = file.type === 'application/pdf';
+  if (!isImg && !isPdf) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const base64 = ev.target.result.split(',')[1];
+    const entry = {
+      type: isImg ? 'image' : 'pdf',
+      base64,
+      mediaType: file.type,
+      name: file.name,
+      size: formatSize(file.size),
+      previewUrl: isImg ? ev.target.result : null
+    };
+    stagedFiles.push(entry);
+    renderStaged();
+  };
+  reader.readAsDataURL(file);
+}
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes/1024).toFixed(0) + ' KB';
+  return (bytes/1048576).toFixed(1) + ' MB';
+}
+
+function renderStaged() {
+  const el = document.getElementById('staged');
+  el.innerHTML = stagedFiles.map((f,i) => `
+    <div class="staged-item">
+      ${f.type==='image'
+        ? `<img class="staged-thumb" src="${f.previewUrl}" alt="${esc(f.name)}"/>`
+        : `<div class="staged-pdf-ic">PDF</div>`}
+      <span class="staged-name">${esc(f.name)}</span>
+      <button class="staged-remove" onclick="removeStaged(${i})">×</button>
+    </div>`).join('');
+}
+
+function removeStaged(i) {
+  stagedFiles.splice(i, 1);
+  renderStaged();
+}
+
+// ── DRAG & DROP ──
+const overlay = document.getElementById('dragOverlay');
+let dragCount = 0;
+
+document.addEventListener('dragenter', e => {
+  e.preventDefault();
+  dragCount++;
+  overlay.classList.add('active');
+});
+document.addEventListener('dragleave', e => {
+  e.preventDefault();
+  dragCount--;
+  if (dragCount <= 0) { dragCount = 0; overlay.classList.remove('active'); }
+});
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => {
+  e.preventDefault();
+  dragCount = 0;
+  overlay.classList.remove('active');
+  const files = Array.from(e.dataTransfer.files);
+  files.forEach(stageFile);
+});
+
+// ── SEND ──
+const INSTANT = [
+  { k:['hi','hello','hey','good morning','good afternoon','good evening','howdy'], r:"Hey! Good to have you here. I'm Chinmay — designer by craft, educator by choice, and biker by passion. Ask me anything about my work, thinking, or how we can connect." },
+  { k:['thank','thanks','appreciate','that helped','helpful'], r:"Happy to help. That's what this is here for. Anything else you'd like to know?" },
+  { k:['great','awesome','wow','impressive','loved it','amazing','brilliant'], r:"That means a lot — genuinely. Is there something specific you'd like to explore further?" },
+  { k:['bye','goodbye','see you','later','that\'s all','nothing else','done'], r:"Thanks for taking the time. If something resonates later and you'd like to continue, I'm always reachable at chinmayhulyalkar@gmail.com. Take care." },
+  { k:['schedule','book','call','meet','meeting','calendar','talk to you','speak to you','connect with you','set up a call','30 minutes','catch up'], r:`<span>I'd love to connect. The best way to reach me is directly:</span><a href="mailto:chinmayhulyalkar@gmail.com?subject=Hello%20Chinmay%20—%20Let's%20connect&body=Hi%20Chinmay%2C%0A%0AI%20came%20across%20your%20profile%20and%20would%20love%20to%20connect.%0A%0A[Tell%20him%20a%20bit%20about%20yourself%20and%20what%20you%20have%20in%20mind]%0A%0ALooking%20forward%20to%20hearing%20from%20you." target="_blank" class="chat-btn">Send an email →</a><a href="https://linkedin.com/in/chinmayhulyalkar" target="_blank" class="chat-btn" style="margin-top:8px;background:transparent;color:var(--ink);border:1px solid var(--rule)">Connect on LinkedIn →</a>` },
+  { k:['email','reach out','send a message','contact you','write to you','drop a message','get in touch'], r:`<span>Happy to hear from you. I'll draft a quick intro — just hit send.</span><a href="mailto:chinmayhulyalkar@gmail.com?subject=Hello%20Chinmay%20—%20Let's%20connect&body=Hi%20Chinmay%2C%0A%0AI%20came%20across%20your%20profile%20and%20would%20love%20to%20connect.%0A%0A[Tell%20him%20a%20bit%20about%20yourself%20and%20what%20you%20have%20in%20mind]%0A%0ALooking%20forward%20to%20hearing%20from%20you." target="_blank" class="chat-btn">Open drafted email →</a><a href="https://linkedin.com/in/chinmayhulyalkar" target="_blank" class="chat-btn" style="margin-top:8px;background:transparent;color:var(--ink);border:1px solid var(--rule)">Connect on LinkedIn →</a>` },
+  { k:['who made this','how does this work','what is this','what is this site'], r:"This is an interactive version of my resume — built so you get a real sense of my thinking, not just a list of job titles. Ask me anything, or drag a design or resume into the chat for a review." },
+  { k:['are you real','are you an ai','is this a bot','are you human','is this real'], r:"I'm Chinmay — at least, a version of me that's always available. The thinking, the philosophy, the experience — all real. The availability, let's say, is enhanced. 😊" },
+  { k:['can you help','what can you do','what can i ask','how can you help','what do you do here'], r:"Quite a bit, actually. Ask me about my career, how I lead design teams, what #CalmByDesign means, my writing and talks, or how to get in touch. You can also drag a design or resume into the chat and I'll give you an honest review." },
+  { k:['architecture','architectural','like a building','kahn','ando','le corbusier','zaha','wright','doshi','think like an architect','architectural lens','design like architecture'], r:"Architecture has been one of my deepest design influences — long before I touched a pixel. I studied it, breathed it, and I still use it every day in UX. Share a design problem or drop a file and I'll look at it through that lens — structure, space, flow, and material. What are you working on?" },
+  { k:['assess my role','does this sound like a fit','would you be interested','is this the right role','thoughts on this opportunity','what do you think of this role'], r:"Tell me more about the role and the company — what does the team look like today, what's the product, and what would you need from a design leader? I'll give you an honest read." },
+  { k:['our company','we are looking for','our team','our culture','we need someone','the role involves','our design process','we work in'], r:"I appreciate you sharing that. Before I respond, a few things would help me understand better — how are design decisions made in your organisation today? And what does the relationship between design and engineering look like?" },
+];
+
+const REVIEW_TRIGGERS = [
+  'review my design','critique this','what do you think of this','feedback on this',
+  'look at this','check this out','thoughts on this','how does this look',
+  'is this good','evaluate this','review my resume','check my cv','look at my resume',
+  'feedback on my cv','is my resume good','how is my resume','review my portfolio',
+  'review this','give me feedback','what do you think','critique my','assess this',
+];
+
+function isReviewIntent(txt) {
+  const t = txt.toLowerCase().trim();
+  return REVIEW_TRIGGERS.some(tr => t.includes(tr));
+}
+
+function checkInstant(txt) {
+  const t = txt.toLowerCase().trim();
+  for (const { k, r } of INSTANT) {
+    if (k.some(w => t === w || t.startsWith(w + ' ') || t.endsWith(' ' + w) || t.includes(' ' + w + ' '))) return r;
+  }
+  return null;
+}
+
+function send() {
+  const el = document.getElementById('inp');
+  const txt = el.value.trim();
+  if ((!txt && !stagedFiles.length) || busy) return;
+  el.value = ''; ar(el);
+
+  const files = [...stagedFiles];
+  stagedFiles = [];
+  renderStaged();
+
+  addUserMsg(txt, files);
+
+  // instant reply for simple greetings — no API call
+  if (!files.length) {
+    const instant = checkInstant(txt);
+    if (instant) { addChinmay(instant); return; }
+
+    // wants a review but hasn't dropped a file
+    if (isReviewIntent(txt)) {
+      addChinmay("Sure — drop your file into the chat and I'll take a look. I can review designs, UI screenshots, or resumes. Just drag and drop it anywhere on the screen.");
+      return;
+    }
+  }
+
+  callAPI(txt, files);
+}
+
+function addUserMsg(txt, files) {
+  const g = mk('div', 'mg user');
+  // show file previews
+  files.forEach(f => {
+    if (f.type === 'image') {
+      const wrap = document.createElement('div');
+      wrap.className = 'img-preview';
+      wrap.innerHTML = `<img src="${f.previewUrl}" alt="${esc(f.name)}"/><div class="img-label">${esc(f.name)}</div>`;
+      g.appendChild(wrap);
+    } else {
+      const wrap = document.createElement('div');
+      wrap.className = 'pdf-preview';
+      wrap.innerHTML = `<div class="pdf-icon">📄</div><div class="pdf-info"><div class="pdf-name">${esc(f.name)}</div><div class="pdf-size">${f.size}</div></div>`;
+      g.appendChild(wrap);
+    }
+  });
+  if (txt) {
+    const bbl = document.createElement('div');
+    bbl.className = 'bbl';
+    bbl.textContent = txt;
+    g.appendChild(bbl);
+  }
+  feed.appendChild(g);
+
+  // Add to history
+  const content = buildUserContent(txt, files);
+  history.push({ role: 'user', content });
+  scrl();
+}
+
+function buildUserContent(txt, files) {
+  if (!files.length) return txt || '';
+  const parts = [];
+  files.forEach(f => {
+    if (f.type === 'image') {
+      parts.push({ type: 'image', source: { type: 'base64', media_type: f.mediaType, data: f.base64 } });
+    } else {
+      parts.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: f.base64 } });
+    }
+  });
+  const label = files.length === 1
+    ? (files[0].type === 'image' ? 'Please review this design.' : 'Please review this resume.')
+    : 'Please review these files.';
+  parts.push({ type: 'text', text: txt ? txt : label });
+  return parts;
+}
+
+const THINKING_WORDS = [
+  'Thinking…','Reflecting…','Considering…','Reading this carefully…',
+  'Give me a moment…','Thinking it through…','Let me think…',
+  'Processing…','Gathering thoughts…','One moment…',
+  'Reading between the lines…','Finding the right words…',
+];
+let thinkIdx = 0;
+let thinkInterval = null;
+
+function showTyp() {
+  const g = mk('div', 'mg ch');
+  g.id = 'typ';
+  g.innerHTML = `<div class="typ"><span class="typ-word">${THINKING_WORDS[thinkIdx % THINKING_WORDS.length]}</span></div>`;
+  feed.appendChild(g);
+  thinkInterval = setInterval(() => {
+    thinkIdx++;
+    const el = document.querySelector('#typ .typ-word');
+    if (el) el.textContent = THINKING_WORDS[thinkIdx % THINKING_WORDS.length];
+  }, 2200);
+  scrl();
+}
+function hideTyp() {
+  clearInterval(thinkInterval);
+  const t = document.getElementById('typ');
+  if (t) t.remove();
+}
+
+function addChinmay(text, isHTML=false) {
+  const g = mk('div', 'mg ch');
+  let inner;
+  if (isHTML) {
+    inner = `<div class="bbl" style="display:flex;flex-direction:column;align-items:flex-start">${text}</div>`;
+  } else {
+    const formatted = text.split(/\n{2,}/).filter(p => p.trim())
+      .map(p => `<p>${p.trim().replace(/\n/g,'<br>')}</p>`).join('');
+    inner = `<div class="bbl">${formatted}</div>`;
+  }
+  g.innerHTML = `<div class="sender">Chinmay</div>${inner}`;
+  feed.appendChild(g);
+  history.push({ role: 'assistant', content: text.replace(/<[^>]+>/g,'') });
+  scrl();
+}
+
+async function callAPI(txt, files) {
+  busy = true;
+  document.getElementById('snd').disabled = true;
+  showTyp();
+  try {
+    const messages = history.slice(-14).map(m => ({
+      role: m.role,
+      content: m.content
+    }));
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM,
+        messages
+      })
+    });
+    const data = await res.json();
+    hideTyp();
+    if (data?.content?.[0]?.text) {
+      addChinmay(data.content[0].text);
+    } else {
+      addChinmay("Something didn't come through clearly — could you try again? Or reach me directly at chinmayhulyalkar@gmail.com.");
+    }
+  } catch(e) {
+    hideTyp();
+    addChinmay("Something went wrong on my end. Try again in a moment, or reach me at chinmayhulyalkar@gmail.com.");
+  } finally {
+    busy = false;
+    document.getElementById('snd').disabled = false;
+  }
+}
+
+function mk(t,c){const e=document.createElement(t);if(c)e.className=c;return e}
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function kd(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}}
+function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,110)+'px'}
+function scrl(){setTimeout(()=>{feed.scrollTop=feed.scrollHeight},60)}
+</script>
+</body>
+</html>
