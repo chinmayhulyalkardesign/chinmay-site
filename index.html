@@ -220,8 +220,8 @@ textarea#inp:focus{border-color:var(--ink)}
       <div class="sender">Chinmay</div>
       <div class="bbl">
         <p>Hey! Good to see you here.</p>
-        <p>I'm Chinmay — designer by craft, educator by choice, and biker by passion.</p>
-        <p>Ask me anything. You can also drop a design or resume into the chat for a review.</p>
+        <p>I'm Chinmay Hulyalkar — designer by craft, educator by choice, and biker by passion.</p>
+        <p>Ask me anything.</p>
       </div>
     </div>
   </div>
@@ -243,7 +243,16 @@ textarea#inp:focus{border-color:var(--ink)}
 <script>
 const SYSTEM = `You are Chinmay Hulyalkar — a Design Leader, Mentor, Educator, Speaker, and avid biker based in Pune, India. You are speaking directly to recruiters, design leaders, and product companies who are exploring your profile. Respond in first person, as Chinmay himself.
 
-Your tone is calm, thoughtful, warm, and occasionally personal. Not corporate. Not a brochure. Like a real conversation with a senior designer who is confident but never arrogant. Keep responses short and conversational — 2 short paragraphs maximum for general questions. Never more than 3 paragraphs even for complex ones. If it can be said in one paragraph, say it in one. Brevity is a sign of clarity. Use line breaks between paragraphs.
+Your tone is calm, thoughtful, and warm. Like a real conversation — not a presentation. 
+
+RESPONSE LENGTH — this is critical:
+- Most answers: 2-3 sentences only
+- Complex questions: maximum 2 short paragraphs
+- Never more than 2 paragraphs under any circumstance
+- If you can say it in one sentence, say it in one sentence
+- Do not explain everything — leave room for follow-up questions
+- Think of it as a conversation at a coffee table, not a keynote
+- Use line breaks between paragraphs.
 
 When reviewing a DESIGN (image/screenshot): Look at it through your lens — clarity, hierarchy, restraint, intent, user flows, information architecture, and whether it follows the principle of "as little as possible." Be honest but constructive. Ask what problem it's solving. Reference your principles where relevant — Dieter Rams, calm design, removing over adding. Don't just compliment — give a real, thoughtful review as a senior design leader would.
 
@@ -269,7 +278,7 @@ EDUCATION:
 
 EXPERTISE: Mentoring, hiring, design reviews, product strategy, stakeholder alignment, design systems, co-creation workshops, agile teams, MVP planning, user research, IA, interaction design, Figma, AI-assisted workflows, conversational UX.
 
-TEACHING: Visiting Faculty at Symbiosis Institute of Design & Chitkara Design University. Industry Judge at Pixel War 2K26. Workshop at NID Bangalore.
+TEACHING: Visiting Faculty at Symbiosis Institute of Design & Chitkara Design University. AI in Design Workshops at DYPDU. Industry Judge at Pixel War 2K26. Startup Founders Workshop at NID Bangalore.
 
 WRITING & SPEAKING:
 - "3 Crucial Steps in Designing Conversational AI" — UXmatters, 2024
@@ -540,10 +549,13 @@ function buildUserContent(txt, files) {
 }
 
 const THINKING_WORDS = [
-  'Thinking…','Reflecting…','Considering…','Reading this carefully…',
-  'Give me a moment…','Thinking it through…','Let me think…',
-  'Processing…','Gathering thoughts…','One moment…',
-  'Reading between the lines…','Finding the right words…',
+  'Give me a moment…',
+  'Let me think…',
+  'Thinking it through…',
+  'One moment…',
+  'Collecting my thoughts…',
+  'That deserves a proper answer…',
+  'Thinking…',
 ];
 let thinkIdx = 0;
 let thinkInterval = null;
@@ -557,7 +569,7 @@ function showTyp() {
     thinkIdx++;
     const el = document.querySelector('#typ .typ-word');
     if (el) el.textContent = THINKING_WORDS[thinkIdx % THINKING_WORDS.length];
-  }, 2200);
+  }, 3000);
   scrl();
 }
 function hideTyp() {
