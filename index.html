@@ -18,6 +18,7 @@
   --dot-color:rgba(0,0,0,.07);--dot-size:1px;--dot-space:20px;
 }
 html,body{height:100%;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;overflow:hidden}
+.wrap{display:flex;flex-direction:column;height:100vh;height:100dvh;position:relative;z-index:1}
 body::before{
   content:'';position:fixed;inset:0;z-index:0;
   background-image:radial-gradient(circle,var(--dot-color) var(--dot-size),transparent var(--dot-size));
@@ -193,8 +194,11 @@ textarea#inp:focus{border-color:var(--ink)}
 
 @media(max-width:640px){
   .feed,.inp-wrap{padding-left:20px;padding-right:20px}
+  .feed{padding-top:32px}
   .bbl{max-width:100%}
-  .drag-box{padding:32px 28px}
+  .sk{grid-template-columns:1fr}
+  .inp-wrap{padding-bottom:max(20px, env(safe-area-inset-bottom))}
+}
 }
 </style>
 </head>
