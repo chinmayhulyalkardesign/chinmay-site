@@ -467,6 +467,50 @@ function isReviewIntent(txt) {
   return REVIEW_TRIGGERS.some(tr => t.includes(tr));
 }
 
+// ── PROJECT GALLERY ──
+// Empty until real work is added. Add entries here — each shows an inline
+// image in the chat only when someone explicitly asks to see that project.
+// Shape:
+// { id:'slug', name:'Display Name', triggers:['keyword','alt name'],
+//   image:'/assets/projects/slug.jpg', caption:'Shown under the image',
+//   blurb:'One line Chinmay says when sharing it' }
+const PROJECTS = [
+  // { id:'talentpool', name:'Talentpool', triggers:['talentpool','talent pool'],
+  //   image:'/assets/projects/talentpool.jpg', caption:'Talentpool — IBDA 2025 Best Design Award',
+  //   blurb:'This is Talentpool — it won the IBDA 2025 Best Design Award. Ask me about the problem it solved.' }
+];
+
+const SHOW_VERBS = ['show','see','look at','view','check out','pull up'];
+const WORK_NOUNS = ['work','project','portfolio','case study','case studies','design','screenshot','screenshots','mockup','mockups'];
+
+function findProjectMatch(txt) {
+  const t = txt.toLowerCase().trim();
+  if (!SHOW_VERBS.some(v => t.includes(v))) return null;
+  const project = PROJECTS.find(p => p.triggers.some(kw => t.includes(kw)) || t.includes(p.name.toLowerCase()));
+  if (project) return project;
+  if (WORK_NOUNS.some(n => t.includes(n))) return 'generic';
+  return null;
+}
+
+function addChinmayProject(p) {
+  const g = mk('div', 'mg ch');
+  g.innerHTML = `<div class="sender">Chinmay</div>`;
+  const wrap = document.createElement('div');
+  wrap.className = 'img-preview';
+  wrap.innerHTML = `<img src="${p.image}" alt="${esc(p.name)}"/><div class="img-label">${esc(p.caption || p.name)}</div>`;
+  g.appendChild(wrap);
+  if (p.blurb) {
+    const bbl = document.createElement('div');
+    bbl.className = 'bbl';
+    bbl.style.marginTop = '8px';
+    bbl.textContent = p.blurb;
+    g.appendChild(bbl);
+  }
+  feed.appendChild(g);
+  history.push({ role: 'assistant', content: `[Shared image: ${p.name}] ${p.blurb || ''}` });
+  scrl();
+}
+
 function checkInstant(txt) {
   const t = txt.toLowerCase().trim();
   for (const { k, r } of INSTANT) {
@@ -489,6 +533,17 @@ function send() {
 
   // instant reply for simple greetings — no API call
   if (!files.length) {
+    const projectMatch = findProjectMatch(txt);
+    if (projectMatch === 'generic') {
+      if (PROJECTS.length) {
+        addChinmay(`I can show you: ${PROJECTS.map(p => p.name).join(', ')}. Which one would you like to see?`);
+      } else {
+        addChinmay("Most of my work is under NDA, so I don't have visuals loaded in here yet — happy to walk you through case studies directly. Drop me a line at chinmayhulyalkar@gmail.com.");
+      }
+      return;
+    }
+    if (projectMatch) { addChinmayProject(projectMatch); return; }
+
     const instant = checkInstant(txt);
     if (instant) { addChinmay(instant); return; }
 
