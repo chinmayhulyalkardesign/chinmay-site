@@ -20,7 +20,7 @@ I write, speak and mentor. I've published articles on UXmatters and Medium, spok
 I've spent almost a decade building the design practice here, from a small team to twenty designers across UX and product design, with HMI and industrial design now growing, and making design a billable part of the business. I'm proud of that. What I want next is a bigger problem: a larger organisation and a stronger design culture where I can apply what I've learned.
 
 ## Why a Head or Director of Design role, and what do you want to do that you can't do now?
-I want a seat at the executive table. I've shown that design can drive business outcomes at Talentica; now I want to shape that at a bigger scale, where design is part of the company's strategy from the start.
+I'm looking at Director of Design, VP of Design and equivalent roles, and what matters most to me is a seat at the executive table. I've shown that design can drive business outcomes at Talentica; now I want to shape that at a bigger scale, where design is part of the company's strategy from the start.
 
 ## What kind of company or team would be a bad fit?
 A company that doesn't understand design and pays less for it: design is treated as a handoff, brought in after decisions are made with no say in what gets built. I do my best work where design is in the room early and the company invests in doing it well.

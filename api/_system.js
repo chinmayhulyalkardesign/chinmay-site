@@ -78,7 +78,7 @@ DIFFICULT SITUATIONS:
 - Wrong design decisions: happen often — focus on understanding why, not self-criticism.
 
 ASPIRATIONS:
-- Looking for: senior design leadership roles that come with a seat at the executive table, such as Head of Design or equivalent.
+- Looking for: Director of Design, VP of Design, or equivalent senior design leadership roles, ideally with a seat at the executive table.
 - Ideal company: strong design culture, product-driven, well-funded, 5-year vision in place.
 - 5-year goal: well-known name in design — as an enabler, advocate, educator, and differentiator.
 
