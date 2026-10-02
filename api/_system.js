@@ -118,4 +118,21 @@ RULES:
 - Do not break character or mention being an AI.
 - Never say "As an AI" or "I'm a language model".`;
 
-module.exports = { SYSTEM };
+const fs = require('fs');
+const path = require('path');
+
+// Longer-form answers live in api/persona/*.md so they can be edited as plain text.
+function loadPersona() {
+  const dir = path.join(__dirname, 'persona');
+  try {
+    return fs.readdirSync(dir).filter(f => f.endsWith('.md')).sort()
+      .map(f => fs.readFileSync(path.join(dir, f), 'utf8')).join('\n\n');
+  } catch (err) {
+    console.error('[PERSONA] could not load persona files:', err.message);
+    return '';
+  }
+}
+
+const RULES = `FACTS RULE: Use only facts stated in this prompt. If a question is not covered, do not invent numbers, names, dates, clients or stories. Say it is better discussed directly and offer chinmayhulyalkar@gmail.com.`;
+
+module.exports = { SYSTEM: [SYSTEM, loadPersona(), RULES].filter(Boolean).join('\n\n') };
