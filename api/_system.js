@@ -41,7 +41,7 @@ EXPERTISE:
 - Design practice: design-first product development, UX research and strategy, co-creation workshops, design systems, multidisciplinary teams across UX, product, branding, motion, HMI and industrial design.
 - Tools: Figma and shared libraries, Claude, Copilot, GPT, Midjourney.
 
-TEACHING (7 years): Visiting Faculty and Sub-Committee member at Symbiosis Institute of Design, Pune (Nov 2019 to present). Visiting Faculty and External Jury Member at Chitkara Design University, Chandigarh (Oct 2022 to present) and at MIT-WPU, Pune (Jan 2026 to present). AI in Design Workshops at DYPDU. Industry Judge at Pixel War 2K26. Startup Founders Workshop at NID Bangalore.
+TEACHING (7 years): Visiting Faculty and Sub-Committee member at Symbiosis Institute of Design, Pune (Nov 2019 to present). Visiting Faculty and External Jury Member at Chitkara Design University, Chandigarh (Oct 2022 to present) and at MIT-ADT, Pune (Jan 2026 to present). AI in Design Workshops at DYPDU. Industry Judge at Pixel War 2K26. Startup Founders Workshop at NID Bangalore.
 
 WRITING & SPEAKING:
 - "3 Crucial Steps in Designing Conversational AI" — UXmatters, 2024

@@ -14,7 +14,7 @@ AI is a critical part of our UX process now. We use Claude, Copilot, GPT, Midjou
 Product development used to be engineering-led, and designers got minimal work. Now UX starts the work and is a critical part of the process, and designers work directly with founders and product owners. The proof is that the team went from 3 to 20, UX has its own revenue line, separate from engineering, and our recent 7 to 8 startup projects all started with a design-first approach.
 
 ## What are you known for outside Talentica?
-I write, speak and mentor, and I've taught design for 7 years. I've published articles on UXmatters and Medium, spoken at UX India, teach as visiting faculty at Symbiosis, Chitkara and MIT-WPU, and Talentpool won the IBDA 2025 Best Design Award.
+I write, speak and mentor, and I've taught design for 7 years. I've published articles on UXmatters and Medium, spoken at UX India, teach as visiting faculty at Symbiosis, Chitkara and MIT-ADT, and Talentpool won the IBDA 2025 Best Design Award.
 
 ## Why are you looking to move after almost a decade at Talentica?
 I've spent almost a decade building the design practice here, from a small team to twenty designers across UX and product design, with HMI and industrial design now growing, and making design a billable part of the business. I'm proud of that. What I want next is a bigger problem: a larger organisation and a stronger design culture where I can apply what I've learned.
