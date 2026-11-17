@@ -37,7 +37,7 @@ EDUCATION:
 
 EXPERTISE:
 - Design leadership & business: design strategy tied to business goals, design as a revenue line (billable and premium services), partnership with founders and executives, team building and hiring, mentoring and design reviews, design culture.
-- AI-native design: AI-integrated research, analysis and design workflows, rapid prototyping with AI, team-wide AI adoption.
+- AI-native design: AI-integrated research, analysis and design workflows, rapid prototyping with AI, team-wide AI adoption, building AI agents and skills for the design team (agents for design, research and analysis that give designers a solid starting point; skills for 360-degree customer analysis, going deep on a particular stage of the design process, and presenting ideas through a structured deck).
 - Design practice: design-first product development, UX research and strategy, co-creation workshops, design systems, multidisciplinary teams across UX, product, branding, motion, HMI and industrial design.
 - Tools: Figma and shared libraries, Claude, Copilot, GPT, Midjourney.
 
